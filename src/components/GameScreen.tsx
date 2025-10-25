@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Joystick } from '@/components/ui/joystick';
 import Icon from '@/components/ui/icon';
 import { getCurrentUser, updateCurrentUser } from '@/lib/auth';
 import { MISSIONS, initializeGame, GameState, getMapBackground } from '@/lib/gameLogic';
+import { soundManager } from '@/lib/soundManager';
 import { toast } from 'sonner';
 
 interface GameScreenProps {
@@ -58,8 +60,10 @@ export default function GameScreen({ missionId, onBack }: GameScreenProps) {
 
         if (hitByEnemy && Math.random() < 0.05) {
           newState.playerHealth = Math.max(0, newState.playerHealth - 10);
+          soundManager.playHit();
           if (newState.playerHealth <= 0) {
             newState.isGameOver = true;
+            soundManager.playDefeat();
             toast.error('Миссия провалена!');
           }
         }
@@ -70,6 +74,7 @@ export default function GameScreen({ missionId, onBack }: GameScreenProps) {
 
         if (newState.enemies.length === 0 && !newState.isVictory) {
           newState.isVictory = true;
+          soundManager.playVictory();
           if (user) {
             const newMissionsCompleted = Math.max(user.missionsCompleted, missionId);
             const newBalance = user.balance + mission.reward;
@@ -123,6 +128,7 @@ export default function GameScreen({ missionId, onBack }: GameScreenProps) {
       };
     });
 
+    soundManager.playExplosion();
     toast.success('💥 Бомбовый удар!');
   };
 
@@ -238,20 +244,14 @@ export default function GameScreen({ missionId, onBack }: GameScreenProps) {
         </Card>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <div
-            className="bg-card/70 backdrop-blur-sm border-2 border-primary/50 rounded-full aspect-square max-w-[150px] mx-auto cursor-pointer select-none relative"
-            onMouseDown={() => setJoystickActive(true)}
-            onMouseUp={() => { setJoystickActive(false); setJoystickDirection({ x: 0, y: 0 }); }}
-            onMouseLeave={() => { setJoystickActive(false); setJoystickDirection({ x: 0, y: 0 }); }}
-            onMouseMove={handleJoystickMove}
-            onTouchStart={() => setJoystickActive(true)}
-            onTouchEnd={() => { setJoystickActive(false); setJoystickDirection({ x: 0, y: 0 }); }}
-            onTouchMove={handleJoystickMove}
-          >
-            <div className="absolute inset-0 flex items-center justify-center pixel-font text-primary">
-              MOVE
-            </div>
-          </div>
+          <Joystick
+            onMove={(x, y) => {
+              setJoystickActive(x !== 0 || y !== 0);
+              setJoystickDirection({ x, y });
+            }}
+            size={150}
+            className="mx-auto"
+          />
 
           <Button
             onClick={handleBomb}

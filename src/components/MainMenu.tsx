@@ -10,8 +10,10 @@ import AdminScreen from './AdminScreen';
 import WeaponsScreen from './WeaponsScreen';
 import MultiplayerScreen from './MultiplayerScreen';
 import MissionsScreen from './MissionsScreen';
+import AchievementsScreen from './AchievementsScreen';
+import SuperAdminScreen from './SuperAdminScreen';
 
-type MenuScreen = 'main' | 'profile' | 'friends' | 'weapons' | 'multiplayer' | 'shop' | 'admin' | 'play' | 'chat';
+type MenuScreen = 'main' | 'profile' | 'friends' | 'weapons' | 'multiplayer' | 'shop' | 'admin' | 'superadmin' | 'play' | 'chat' | 'achievements';
 
 interface MainMenuProps {
   onLogout: () => void;
@@ -36,7 +38,9 @@ export default function MainMenu({ onLogout }: MainMenuProps) {
     { id: 'multiplayer' as MenuScreen, label: 'Мультиплеер', icon: 'Gamepad2' },
     { id: 'shop' as MenuScreen, label: 'Магазин', icon: 'ShoppingCart' },
     ...(user.isAdmin ? [{ id: 'admin' as MenuScreen, label: 'Админ меню', icon: 'Shield' }] : []),
+    ...(user.isAdmin ? [{ id: 'superadmin' as MenuScreen, label: 'Супер Админ', icon: 'Terminal' }] : []),
     { id: 'play' as MenuScreen, label: 'Играть', icon: 'Play' },
+    { id: 'achievements' as MenuScreen, label: 'Достижения', icon: 'Trophy' },
     { id: 'chat' as MenuScreen, label: 'Чат', icon: 'MessageCircle' },
   ];
 
@@ -70,6 +74,14 @@ export default function MainMenu({ onLogout }: MainMenuProps) {
 
   if (currentScreen === 'play') {
     return <MissionsScreen onBack={() => setCurrentScreen('main')} />;
+  }
+
+  if (currentScreen === 'achievements') {
+    return <AchievementsScreen onBack={() => setCurrentScreen('main')} />;
+  }
+
+  if (currentScreen === 'superadmin' && user.isAdmin) {
+    return <SuperAdminScreen onBack={() => setCurrentScreen('main')} />;
   }
 
   return (
