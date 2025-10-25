@@ -7,6 +7,9 @@ import FriendsScreen from './FriendsScreen';
 import ShopScreen from './ShopScreen';
 import ChatScreen from './ChatScreen';
 import AdminScreen from './AdminScreen';
+import WeaponsScreen from './WeaponsScreen';
+import MultiplayerScreen from './MultiplayerScreen';
+import MissionsScreen from './MissionsScreen';
 
 type MenuScreen = 'main' | 'profile' | 'friends' | 'weapons' | 'multiplayer' | 'shop' | 'admin' | 'play' | 'chat';
 
@@ -55,6 +58,18 @@ export default function MainMenu({ onLogout }: MainMenuProps) {
 
   if (currentScreen === 'admin' && user.isAdmin) {
     return <AdminScreen onBack={() => setCurrentScreen('main')} />;
+  }
+
+  if (currentScreen === 'weapons') {
+    return <WeaponsScreen onBack={() => setCurrentScreen('main')} />;
+  }
+
+  if (currentScreen === 'multiplayer') {
+    return <MultiplayerScreen onBack={() => setCurrentScreen('main')} />;
+  }
+
+  if (currentScreen === 'play') {
+    return <MissionsScreen onBack={() => setCurrentScreen('main')} />;
   }
 
   return (
