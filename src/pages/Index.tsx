@@ -1,14 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import AuthScreen from '@/components/AuthScreen';
+import MainMenu from '@/components/MainMenu';
+import { getCurrentUser } from '@/lib/auth';
 
-const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
-    </div>
-  );
-};
+export default function Index() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-export default Index;
+  useEffect(() => {
+    const user = getCurrentUser();
+    setIsAuthenticated(!!user);
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
+
+  return <MainMenu onLogout={handleLogout} />;
+}
